@@ -60,11 +60,17 @@ class MarkovInterface(QWidget):
         matriz = np.zeros((filas, columnas))
         for i in range(filas):
             for j in range(columnas):
-                valor, ok = QInputDialog.getDouble(
+                valor, ok = QInputDialog.getText(
                     self, f"Ingrese el elemento [{i + 1}, {j + 1}] de {nombre_matriz}",
                     f"Ingrese el elemento [{i + 1}, {j + 1}] de {nombre_matriz}:")
                 if ok:
-                    matriz[i, j] = valor
+                    try:
+                        valor_float = round(float(valor), 3)  # Convertir a float y redondear a 3 decimales
+                        matriz[i, j] = valor_float
+                    except ValueError:
+                        QMessageBox.warning(self, "Valor inválido",
+                                            "Ingrese un número válido.")
+                        return None
                 else:
                     return None
         return matriz
