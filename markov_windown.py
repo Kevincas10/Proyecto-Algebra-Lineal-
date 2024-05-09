@@ -1,5 +1,7 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QSpinBox, QGridLayout, QTextEdit, QMessageBox, QInputDialog, QScrollArea
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QSpinBox, QGridLayout, QTextEdit, \
+    QMessageBox, QInputDialog, QScrollArea, QHBoxLayout
+from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt  # Importa la clase Qt
 
 import numpy as np
@@ -13,6 +15,30 @@ class MarkovInterface(QWidget):
         self.initUI()
 
     def initUI(self):
+        # Logo en la parte superior izquierda
+        logo_label = QLabel()
+        pixmap = QPixmap("logo.jpeg")  # Ruta a tu archivo de imagen
+        pixmap_resized = pixmap.scaledToWidth(70)  # Redimensiona el logo al ancho deseado (100 en este ejemplo)
+        logo_label.setPixmap(pixmap_resized)
+
+        # Título centrado y en negrita
+        x = QLabel("")
+        self.label_titulo = QLabel("<h1><b>Método de Markov</b></h1>")
+        self.label_titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # Layout para el título y el logo
+        layout_titulo_logo = QHBoxLayout()
+        layout_titulo_logo.addWidget(logo_label)
+        layout_titulo_logo.addWidget(x)
+        layout_titulo_logo.addWidget(self.label_titulo)
+        layout_titulo_logo.addWidget(x)
+        layout_titulo_logo.addWidget(x)
+
+        # Layout principal
+        layout_principal = QVBoxLayout()
+
+        layout_principal.addLayout(layout_titulo_logo)
+
         self.label_transicion = QLabel("Tamaño de la matriz de transición (filas x columnas):")
         self.spin_filas_transicion = QSpinBox()
         self.spin_filas_transicion.setMinimum(1)
@@ -30,6 +56,8 @@ class MarkovInterface(QWidget):
         self.spin_iteraciones.setMinimum(1)
 
         self.btn_calcular = QPushButton("Calcular")
+        self.btn_calcular.setStyleSheet(
+            "background-color: blue; color: white;")  # Cambia el color del botón a azul y el texto a blanco
         self.btn_calcular.clicked.connect(self.calcular_markov)
 
         self.resultados_layout = QVBoxLayout()  # Layout para los resultados
@@ -42,19 +70,22 @@ class MarkovInterface(QWidget):
         widget_interior.setLayout(self.resultados_layout)
         self.scroll_area.setWidget(widget_interior)
 
-        layout = QGridLayout()
-        layout.addWidget(self.label_transicion, 0, 0)
-        layout.addWidget(self.spin_filas_transicion, 0, 1)
-        layout.addWidget(self.spin_columnas_transicion, 0, 2)
-        layout.addWidget(self.label_matriz, 1, 0)
-        layout.addWidget(self.spin_filas_matriz, 1, 1)
-        layout.addWidget(self.spin_columnas_matriz, 1, 2)
-        layout.addWidget(self.label_iteraciones, 2, 0)
-        layout.addWidget(self.spin_iteraciones, 2, 1)
-        layout.addWidget(self.btn_calcular, 3, 0, 1, 3)
-        layout.addWidget(self.scroll_area, 4, 0, 1, 3)
+        # Layout para los controles y resultados
+        layout_controles_resultados = QGridLayout()
+        layout_controles_resultados.addWidget(self.label_transicion, 0, 0)
+        layout_controles_resultados.addWidget(self.spin_filas_transicion, 0, 1)
+        layout_controles_resultados.addWidget(self.spin_columnas_transicion, 0, 2)
+        layout_controles_resultados.addWidget(self.label_matriz, 1, 0)
+        layout_controles_resultados.addWidget(self.spin_filas_matriz, 1, 1)
+        layout_controles_resultados.addWidget(self.spin_columnas_matriz, 1, 2)
+        layout_controles_resultados.addWidget(self.label_iteraciones, 2, 0)
+        layout_controles_resultados.addWidget(self.spin_iteraciones, 2, 1)
+        layout_controles_resultados.addWidget(self.btn_calcular, 3, 0, 1, 3)
+        layout_controles_resultados.addWidget(self.scroll_area, 4, 0, 1, 3)
 
-        self.setLayout(layout)
+        layout_principal.addLayout(layout_controles_resultados)
+
+        self.setLayout(layout_principal)
 
     def ingresar_matriz(self, filas, columnas, nombre_matriz):
         matriz = np.zeros((filas, columnas))
@@ -79,14 +110,21 @@ class MarkovInterface(QWidget):
         resultado_texto = QTextEdit()
         resultado_texto.setReadOnly(True)
         resultado_texto.setPlainText(texto)
-        if resaltar:  # Resaltar en amarillo si es la última iteración
-            resultado_texto.setStyleSheet("background-color: yellow;")
+        if resaltar:  # Resaltar en color personalizado si es la última iteración
+            resultado_texto.setStyleSheet(
+                "background-color: #5353ec; color: white;")  # Fondo en #5353ec, letras blancas
         self.resultados_layout.addWidget(resultado_texto)
         self.resultados_texto.append(resultado_texto)
 
     def calcular_markov(self):
         filas_transicion = self.spin_filas_transicion.value()
         columnas_transicion = self.spin_columnas_transicion.value()
+
+        # Verificar si se ha ingresado la matriz de transición antes de solicitar los valores de las matrices
+        if filas_transicion == 0 or columnas_transicion == 0:
+            QMessageBox.warning(self, "Datos faltantes", "Ingrese primero la matriz de transición.")
+            return
+
         transicion = self.ingresar_matriz(filas_transicion, columnas_transicion, "la matriz de transición")
 
         filas_matriz = self.spin_filas_matriz.value()
@@ -98,7 +136,7 @@ class MarkovInterface(QWidget):
         estado_actual = matriz
         for i in range(iteraciones):
             resultado = np.dot(transicion, estado_actual)
-            texto_resultado = f"Iteración {i + 1}:\nMatriz Resultante:\nFilas x Columnas: {resultado.shape[0]} x {resultado.shape[1]}\n{resultado}"
+            texto_resultado = f"Iteración {i + 1}:\nMatriz Resultante:\n{resultado}"
             self.agregar_resultado(texto_resultado, resaltar=i == iteraciones - 1)  # Resaltar la última iteración
             estado_actual = resultado
 
