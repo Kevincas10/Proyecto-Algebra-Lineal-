@@ -75,10 +75,12 @@ class MarkovInterface(QWidget):
                     return None
         return matriz
 
-    def agregar_resultado(self, texto):
+    def agregar_resultado(self, texto, resaltar=False):
         resultado_texto = QTextEdit()
         resultado_texto.setReadOnly(True)
         resultado_texto.setPlainText(texto)
+        if resaltar:  # Resaltar en amarillo si es la última iteración
+            resultado_texto.setStyleSheet("background-color: yellow;")
         self.resultados_layout.addWidget(resultado_texto)
         self.resultados_texto.append(resultado_texto)
 
@@ -94,11 +96,10 @@ class MarkovInterface(QWidget):
         iteraciones = self.spin_iteraciones.value()
 
         estado_actual = matriz
-        self.agregar_resultado("Método de Markov:")
         for i in range(iteraciones):
             resultado = np.dot(transicion, estado_actual)
             texto_resultado = f"Iteración {i + 1}:\nMatriz Resultante:\nFilas x Columnas: {resultado.shape[0]} x {resultado.shape[1]}\n{resultado}"
-            self.agregar_resultado(texto_resultado)
+            self.agregar_resultado(texto_resultado, resaltar=i == iteraciones - 1)  # Resaltar la última iteración
             estado_actual = resultado
 
         self.scroll_area.verticalScrollBar().setValue(self.scroll_area.verticalScrollBar().maximum())
