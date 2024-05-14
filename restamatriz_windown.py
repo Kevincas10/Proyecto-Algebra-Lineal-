@@ -1,6 +1,8 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, QMessageBox
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, \
+    QMessageBox
 from PyQt6.QtCore import Qt
+
 
 class MatrixInputWidget(QWidget):
     def __init__(self, rows, cols):
@@ -52,12 +54,15 @@ class MatrixInputWidget(QWidget):
             matrix_data.append(row_data)
         return matrix_data
 
+
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Operaciones con Matrices")
+        self.setWindowTitle("Resta de Matrices")
         self.setGeometry(100, 100, 800, 600)
+
+        self.layout_principal = QVBoxLayout()
 
         self.create_widgets()
         self.layout_widgets()
@@ -66,7 +71,7 @@ class MainWindow(QWidget):
         self.matriz_b = None
 
     def create_widgets(self):
-        self.label_titulo = QLabel("<h2>Operaciones con Matrices</h2>")
+        self.label_titulo = QLabel("<h2>Resta de Matrices</h2>")
         self.label_titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.label_filas = QLabel("Número de filas:")
@@ -117,6 +122,7 @@ class MainWindow(QWidget):
         layout_principal.addWidget(self.button_calcular)
         layout_principal.addWidget(self.textedit_resultado)
 
+        self.layout_principal = layout_principal
         self.setLayout(layout_principal)
 
     def ingresar_matriz_a(self):
@@ -139,7 +145,7 @@ class MainWindow(QWidget):
             return
 
         self.matrix_input_widget_a = MatrixInputWidget(filas, columnas)
-        self.layout().insertWidget(4, self.matrix_input_widget_a)  # Insertar la matriz después de los campos de entrada
+        self.layout_principal.insertWidget(4, self.matrix_input_widget_a)
 
         self.button_ingresar_a.setEnabled(False)
         self.button_ingresar_b.setEnabled(True)
@@ -164,7 +170,8 @@ class MainWindow(QWidget):
             return
 
         self.matrix_input_widget_b = MatrixInputWidget(filas, columnas)
-        self.layout().insertWidget(5, self.matrix_input_widget_b)  # Insertar la matriz después de la matriz A
+        index_boton_ingresar_b = self.layout_principal.indexOf(self.button_ingresar_b)
+        self.layout_principal.insertWidget(index_boton_ingresar_b + 1, self.matrix_input_widget_b)
 
         self.button_ingresar_b.setEnabled(False)
         self.button_calcular.setEnabled(True)
@@ -184,23 +191,37 @@ class MainWindow(QWidget):
         for i in range(len(matriz_a_data)):
             fila_resultado = []
             for j in range(len(matriz_a_data[i])):
-                resta = matriz_a_data[i][j] - matriz_b_data[i][j]
+                resta = matriz_a_data[i][j] - matriz_b_data[i][j]  # Resta en lugar de suma
                 fila_resultado.append(resta)
             resultado.append(fila_resultado)
 
         resultado_texto = "Procedimiento de la Resta:\n"
-        resultado_texto += f"Matriz A:\n{matriz_a_data}\n\n"
-        resultado_texto += f"Matriz B:\n{matriz_b_data}\n\n"
+        resultado_texto += f"Matriz A:\n{self.format_matrix(matriz_a_data)}\n\n"
+        resultado_texto += f"Matriz B:\n{self.format_matrix(matriz_b_data)}\n\n"
         resultado_texto += "Resultado de la Resta:\n"
-        resultado_texto += f"{resultado}\n"
+        resultado_texto += f"{self.format_matrix(resultado)}\n"
 
         self.textedit_resultado.setText(resultado_texto)
+
+    def format_matrix(self, matrix):
+        if not matrix:
+            return ""
+        rows = len(matrix)
+        cols = len(matrix[0])
+        formatted = ""
+        for i in range(rows):
+            for j in range(cols):
+                formatted += f"{matrix[i][j]}\t"
+            formatted += "\n"
+        return formatted
+
 
 def main():
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()

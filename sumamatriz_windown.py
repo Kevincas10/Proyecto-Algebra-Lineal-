@@ -1,35 +1,74 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, QMessageBox, QInputDialog
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, \
+    QMessageBox
 from PyQt6.QtCore import Qt
 
-def sumar_matrices(matriz1, matriz2):
-    if len(matriz1) != len(matriz2) or len(matriz1[0]) != len(matriz2[0]):
-        return None  # Las matrices no tienen las mismas dimensiones
-    resultado = []
-    pasos = []
-    for i in range(len(matriz1)):
-        fila = []
-        paso = []
-        for j in range(len(matriz1[0])):
-            suma = matriz1[i][j] + matriz2[i][j]
-            fila.append(suma)
-            paso.append(f"{matriz1[i][j]} + {matriz2[i][j]} = {suma}")
-        resultado.append(fila)
-        pasos.append(paso)
-    return resultado, pasos
+
+class MatrixInputWidget(QWidget):
+    def __init__(self, rows, cols):
+        super().__init__()
+
+        self.rows = rows
+        self.cols = cols
+        self.create_widgets()
+        self.layout_widgets()
+
+    def create_widgets(self):
+        self.labels = []
+        self.inputs = []
+        for i in range(self.rows):
+            row_labels = []
+            row_inputs = []
+            for j in range(self.cols):
+                label = QLabel()
+                input_box = QLineEdit()
+                row_labels.append(label)
+                row_inputs.append(input_box)
+            self.labels.append(row_labels)
+            self.inputs.append(row_inputs)
+
+    def layout_widgets(self):
+        layout = QVBoxLayout()
+
+        for i in range(self.rows):
+            hbox = QHBoxLayout()
+            for j in range(self.cols):
+                hbox.addWidget(self.labels[i][j])
+                hbox.addWidget(self.inputs[i][j])
+            layout.addLayout(hbox)
+
+        self.setLayout(layout)
+
+    def get_matrix_data(self):
+        matrix_data = []
+        for i in range(self.rows):
+            row_data = []
+            for j in range(self.cols):
+                value = self.inputs[i][j].text()
+                try:
+                    value = float(value)
+                except ValueError:
+                    QMessageBox.warning(self, "Error", "Por favor ingrese solo números en la matriz.")
+                    return None
+                row_data.append(value)
+            matrix_data.append(row_data)
+        return matrix_data
+
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Suma de Matrices")
-        self.setGeometry(100, 100, 600, 400)  # Se aumentó el tamaño de la ventana
+        self.setGeometry(100, 100, 800, 600)
+
+        self.layout_principal = QVBoxLayout()  # Agregar esta línea para inicializar el layout_principal
 
         self.create_widgets()
         self.layout_widgets()
 
-        self.matriz_a = []
-        self.matriz_b = []
+        self.matriz_a = None
+        self.matriz_b = None
 
     def create_widgets(self):
         self.label_titulo = QLabel("<h2>Suma de Matrices</h2>")
@@ -41,18 +80,17 @@ class MainWindow(QWidget):
         self.label_columnas = QLabel("Número de columnas:")
         self.input_columnas = QLineEdit()
 
-        self.button_matriz_a = QPushButton("Ingresar Matriz A")
-        self.button_matriz_a.setStyleSheet("background-color: #2196F3; color: white;")  # Color azul
-        self.button_matriz_b = QPushButton("Ingresar Matriz B")
-        self.button_matriz_b.setStyleSheet("background-color: #2196F3; color: white;")  # Color azul
-        self.button_matriz_b.setEnabled(False)
+        self.button_ingresar_a = QPushButton("Ingresar Matriz A")
+        self.button_ingresar_a.setStyleSheet("background-color: #2196F3; color: white;")
 
-        self.button_calcular = QPushButton("Calcular")
-        self.button_calcular.setStyleSheet("background-color: #2196F3; color: white;")  # Color azul
+        self.button_ingresar_b = QPushButton("Ingresar Matriz B")
+        self.button_ingresar_b.setStyleSheet("background-color: #2196F3; color: white;")
+        self.button_ingresar_b.setEnabled(False)
+
+        self.button_calcular = QPushButton("Calcular Suma")  # Updated button text
+        self.button_calcular.setStyleSheet("background-color: #2196F3; color: white;")
         self.button_calcular.setEnabled(False)
 
-        self.label_resultado = QLabel("<h3>Resultado de la suma:</h3>")
-        self.label_resultado.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.textedit_resultado = QTextEdit()
         self.textedit_resultado.setReadOnly(True)
 
@@ -69,78 +107,125 @@ class MainWindow(QWidget):
         layout_columnas.addWidget(self.label_columnas)
         layout_columnas.addWidget(self.input_columnas)
 
-        layout_botones = QHBoxLayout()
-        layout_botones.addWidget(self.button_matriz_a)
-        layout_botones.addWidget(self.button_matriz_b)
-        layout_botones.addWidget(self.button_calcular)
-
-        layout_resultado = QVBoxLayout()
-        layout_resultado.addWidget(self.label_resultado)
-        layout_resultado.addWidget(self.textedit_resultado)
-
         layout_principal.addLayout(layout_filas)
         layout_principal.addLayout(layout_columnas)
-        layout_principal.addLayout(layout_botones)
-        layout_principal.addLayout(layout_resultado)
+
+        self.matrix_input_widget_a = None
+        self.matrix_input_widget_b = None
+
+        self.button_ingresar_a.clicked.connect(self.ingresar_matriz_a)
+        self.button_ingresar_b.clicked.connect(self.ingresar_matriz_b)
+        self.button_calcular.clicked.connect(self.calcular_suma)  # Connect to calcular_suma method
+
+        layout_principal.addWidget(self.button_ingresar_a)
+        layout_principal.addWidget(self.button_ingresar_b)
+        layout_principal.addWidget(self.button_calcular)
+        layout_principal.addWidget(self.textedit_resultado)
+
+        self.layout_principal = layout_principal  # Asignar el layout_principal al atributo de la clase
 
         self.setLayout(layout_principal)
 
-        self.button_matriz_a.clicked.connect(self.ingresar_matriz_a)
-        self.button_matriz_b.clicked.connect(self.ingresar_matriz_b)
-        self.button_calcular.clicked.connect(self.calcular_suma)
-
     def ingresar_matriz_a(self):
-        filas = int(self.input_filas.text())
-        columnas = int(self.input_columnas.text())
+        filas_texto = self.input_filas.text()
+        columnas_texto = self.input_columnas.text()
 
-        self.matriz_a = []
-        for i in range(filas):
-            fila = []
-            for j in range(columnas):
-                valor, ok = QInputDialog.getDouble(self, f"Matriz A [{i+1},{j+1}]", f"Ingrese el elemento [{i+1},{j+1}] de la Matriz A:")
-                if not ok:
-                    return
-                fila.append(valor)
-            self.matriz_a.append(fila)
+        if not filas_texto or not columnas_texto:
+            QMessageBox.warning(self, "Error", "Por favor ingrese el número de filas y columnas.")
+            return
 
-        self.button_matriz_a.setEnabled(False)
-        self.button_matriz_b.setEnabled(True)
+        try:
+            filas = int(filas_texto)
+            columnas = int(columnas_texto)
+        except ValueError:
+            QMessageBox.warning(self, "Error", "Por favor ingrese números válidos para filas y columnas.")
+            return
+
+        if filas <= 0 or columnas <= 0:
+            QMessageBox.warning(self, "Error", "El número de filas y columnas debe ser mayor que cero.")
+            return
+
+        self.matrix_input_widget_a = MatrixInputWidget(filas, columnas)
+        self.layout_principal.insertWidget(4,
+                                           self.matrix_input_widget_a)  # Insertar la matriz después de los campos de entrada
+
+        self.button_ingresar_a.setEnabled(False)
+        self.button_ingresar_b.setEnabled(True)
 
     def ingresar_matriz_b(self):
-        filas = int(self.input_filas.text())
-        columnas = int(self.input_columnas.text())
+        filas_texto = self.input_filas.text()
+        columnas_texto = self.input_columnas.text()
 
-        self.matriz_b = []
-        for i in range(filas):
-            fila = []
-            for j in range(columnas):
-                valor, ok = QInputDialog.getDouble(self, f"Matriz B [{i+1},{j+1}]", f"Ingrese el elemento [{i+1},{j+1}] de la Matriz B:")
-                if not ok:
-                    return
-                fila.append(valor)
-            self.matriz_b.append(fila)
+        if not filas_texto or not columnas_texto:
+            QMessageBox.warning(self, "Error", "Por favor ingrese el número de filas y columnas.")
+            return
 
-        self.button_matriz_b.setEnabled(False)
+        try:
+            filas = int(filas_texto)
+            columnas = int(columnas_texto)
+        except ValueError:
+            QMessageBox.warning(self, "Error", "Por favor ingrese números válidos para filas y columnas.")
+            return
+
+        if filas <= 0 or columnas <= 0:
+            QMessageBox.warning(self, "Error", "El número de filas y columnas debe ser mayor que cero.")
+            return
+
+        self.matrix_input_widget_b = MatrixInputWidget(filas, columnas)
+
+        # Insertar la matriz debajo del botón "Ingresar Matriz B"
+        index_boton_ingresar_b = self.layout_principal.indexOf(self.button_ingresar_b)
+        self.layout_principal.insertWidget(index_boton_ingresar_b + 1, self.matrix_input_widget_b)
+
+        self.button_ingresar_b.setEnabled(False)
         self.button_calcular.setEnabled(True)
 
     def calcular_suma(self):
-        resultado, pasos = sumar_matrices(self.matriz_a, self.matriz_b)
-        if resultado:
-            resultado_texto = ""
-            for paso in pasos:
-                resultado_texto += ", ".join(paso) + "\n"
-            resultado_texto += "\nResultado de la suma:\n"
-            for fila in resultado:
-                resultado_texto += str(fila) + "\n"
-            self.textedit_resultado.setText(resultado_texto)
-        else:
-            self.textedit_resultado.setText("Las matrices no tienen las mismas dimensiones y no se pueden sumar.")
+        matriz_a_data = self.matrix_input_widget_a.get_matrix_data()
+        matriz_b_data = self.matrix_input_widget_b.get_matrix_data()
+
+        if matriz_a_data is None or matriz_b_data is None:
+            return
+
+        if len(matriz_a_data) != len(matriz_b_data) or len(matriz_a_data[0]) != len(matriz_b_data[0]):
+            QMessageBox.warning(self, "Error", "Las matrices deben tener la misma dimensión para realizar la suma.")
+            return
+
+        resultado = []
+        for i in range(len(matriz_a_data)):
+            fila_resultado = []
+            for j in range(len(matriz_a_data[i])):
+                suma = matriz_a_data[i][j] + matriz_b_data[i][j]
+                fila_resultado.append(suma)
+            resultado.append(fila_resultado)
+
+        resultado_texto = "Procedimiento de la Suma:\n"
+        resultado_texto += f"Matriz A:\n{self.format_matrix(matriz_a_data)}\n\n"
+        resultado_texto += f"Matriz B:\n{self.format_matrix(matriz_b_data)}\n\n"
+        resultado_texto += "Resultado de la Suma:\n"
+        resultado_texto += f"{self.format_matrix(resultado)}\n"
+
+        self.textedit_resultado.setText(resultado_texto)
+
+    def format_matrix(self, matrix):
+        if not matrix:
+            return ""
+        rows = len(matrix)
+        cols = len(matrix[0])
+        formatted = ""
+        for i in range(rows):
+            for j in range(cols):
+                formatted += f"{matrix[i][j]}\t"
+            formatted += "\n"
+        return formatted
+
 
 def main():
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()
