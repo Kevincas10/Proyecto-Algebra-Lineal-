@@ -2,12 +2,13 @@ import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QSpinBox, QGridLayout, QTextEdit, \
     QMessageBox, QInputDialog, QScrollArea, QHBoxLayout
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtCore import Qt  # Importa la clase Qt
+from PyQt6.QtCore import Qt, pyqtSignal  # Importa la clase Qt
 
 import numpy as np
 
 
 class MarkovInterface(QWidget):
+    window_closed = pyqtSignal()
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Método de Markov")
@@ -17,7 +18,7 @@ class MarkovInterface(QWidget):
     def initUI(self):
         # Logo en la parte superior izquierda
         logo_label = QLabel()
-        pixmap = QPixmap("logo.jpeg")  # Ruta a tu archivo de imagen
+        pixmap = QPixmap("logo.png")  # Ruta a tu archivo de imagen
         pixmap_resized = pixmap.scaledToWidth(70)  # Redimensiona el logo al ancho deseado (100 en este ejemplo)
         logo_label.setPixmap(pixmap_resized)
 
@@ -86,6 +87,10 @@ class MarkovInterface(QWidget):
         layout_principal.addLayout(layout_controles_resultados)
 
         self.setLayout(layout_principal)
+
+    def closeEvent(self, event):
+        self.window_closed.emit()
+        super().closeEvent(event)
 
     def ingresar_matriz(self, filas, columnas, nombre_matriz):
         matriz = np.zeros((filas, columnas))
