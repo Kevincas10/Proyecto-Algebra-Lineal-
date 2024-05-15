@@ -1,10 +1,11 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, QMessageBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, \
+    QMessageBox
+from PyQt6.QtCore import Qt, pyqtSignal
 
 
 class MatrixInputWidget(QWidget):
-    def __init__(self, rows, cols):  # Corregido: __init__ en lugar de _init_
+    def __init__(self, rows, cols):
         super().__init__()
 
         self.rows = rows
@@ -54,8 +55,10 @@ class MatrixInputWidget(QWidget):
         return matrix_data
 
 
-class MainWindow(QWidget):
-    def __init__(self):  # Corregido: __init__ en lugar de _init_
+class MainWindowMulti(QWidget):
+    window_closed = pyqtSignal()
+
+    def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Multiplicación de Matrices")
@@ -84,15 +87,15 @@ class MainWindow(QWidget):
         self.input_columnas_b = QLineEdit()
 
         self.button_ingresar_a = QPushButton("Ingresar Matriz A")
-        self.button_ingresar_a.setStyleSheet("background-color: #2196F3; color: white;")
+        self.button_ingresar_a.setStyleSheet("background-color: #008080; color: white; border-radius: 3px")
         self.button_ingresar_a.clicked.connect(self.mostrar_matriz_a)
 
         self.button_ingresar_b = QPushButton("Ingresar Matriz B")
-        self.button_ingresar_b.setStyleSheet("background-color: #2196F3; color: white;")
+        self.button_ingresar_b.setStyleSheet("background-color: #008080; color: white; border-radius: 3px")
         self.button_ingresar_b.clicked.connect(self.mostrar_matriz_b)
 
         self.button_calcular = QPushButton("Calcular Multiplicación")
-        self.button_calcular.setStyleSheet("background-color: #2196F3; color: white;")
+        self.button_calcular.setStyleSheet("background-color: #008080; color: white; border-radius: 3px")
         self.button_calcular.setEnabled(False)
         self.button_calcular.clicked.connect(self.calcular_multiplicacion)
 
@@ -146,7 +149,8 @@ class MainWindow(QWidget):
             filas = int(filas_texto)
             columnas = int(columnas_texto)
         except ValueError:
-            QMessageBox.warning(self, "Error", "Por favor ingrese números válidos para filas y columnas de la Matriz A.")
+            QMessageBox.warning(self, "Error",
+                                "Por favor ingrese números válidos para filas y columnas de la Matriz A.")
             return
 
         if filas <= 0 or columnas <= 0:
@@ -174,7 +178,8 @@ class MainWindow(QWidget):
             filas = int(filas_texto)
             columnas = int(columnas_texto)
         except ValueError:
-            QMessageBox.warning(self, "Error", "Por favor ingrese números válidos para filas y columnas de la Matriz B.")
+            QMessageBox.warning(self, "Error",
+                                "Por favor ingrese números válidos para filas y columnas de la Matriz B.")
             return
 
         if filas <= 0 or columnas <= 0:
@@ -204,11 +209,13 @@ class MainWindow(QWidget):
             filas_b = int(filas_b_texto)
             columnas_b = int(columnas_b_texto)
         except ValueError:
-            QMessageBox.warning(self, "Error", "Por favor ingrese números válidos para las dimensiones de las matrices.")
+            QMessageBox.warning(self, "Error",
+                                "Por favor ingrese números válidos para las dimensiones de las matrices.")
             return
 
         if columnas_a != filas_b:
-            QMessageBox.warning(self, "Error", "Las matrices no se pueden multiplicar. Las columnas de A deben ser iguales a las filas de B.")
+            QMessageBox.warning(self, "Error",
+                                "Las matrices no se pueden multiplicar. Las columnas de A deben ser iguales a las filas de B.")
             return
 
         matriz_a_data = self.matrix_input_widget_a.get_matrix_data()
@@ -244,10 +251,14 @@ class MainWindow(QWidget):
             formatted += "\n"
         return formatted
 
+    def closeEvent(self, event):
+        self.window_closed.emit()
+        super().closeEvent(event)
+
 
 def main():
     app = QApplication(sys.argv)
-    window = MainWindow()
+    window = MainWindowMulti()
     window.show()
     sys.exit(app.exec())
 

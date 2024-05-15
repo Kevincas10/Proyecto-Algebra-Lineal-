@@ -64,11 +64,11 @@ class MarkovInterface(QWidget):
         self.spin_iteraciones.setMinimum(1)
 
         self.btn_calcular = QPushButton("Calcular")
-        self.btn_calcular.setStyleSheet("background-color: blue; color: white;")
+        self.btn_calcular.setStyleSheet("background-color: #008080; color: white; border: 2px solid black;  border-radius: 3px")
         self.btn_calcular.clicked.connect(self.calcular_markov)
 
         self.btn_configurar_tablas = QPushButton("Configurar Tablas")
-        self.btn_configurar_tablas.setStyleSheet("background-color: green; color: white;")
+        self.btn_configurar_tablas.setStyleSheet("background-color: #008080; color: white; border: 2px solid black;  border-radius: 3px")
         self.btn_configurar_tablas.clicked.connect(self.configurar_tablas)
 
         self.table_transicion = QTableWidget()

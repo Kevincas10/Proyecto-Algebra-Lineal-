@@ -1,13 +1,17 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
-from markov_windown import MarkovInterface
-from sub_main_matriz import MainWindowMatriz
+from PyQt6.QtCore import pyqtSignal
 
+from multiplicacion_de_matrices import MainWindowMulti
+from restamatriz_windown import MainWindowResta
+from sumamatriz_windown import MainWindowSuma
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindowMatriz(QtWidgets.QMainWindow):
+    window_closed = pyqtSignal()
+
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Calculadora Algebra Lineal")
+        self.setWindowTitle("Funciones entre matrices")
         self.resize(700, 600)
         font = QtGui.QFont()
         font.setBold(False)
@@ -21,7 +25,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(150, 20, 391, 141))
-        self.label.setText("<html><head/><body><p align=\"center\"><span style=\" font-size:20pt; font-weight:700;\">Programa Algebra Lineal. </span></p></body></html>")
+        self.label.setText(
+            "<html><head/><body><p align=\"center\"><span style=\" font-size:20pt; font-weight:700;\"> Funciones entre matrices. </span></p></body></html>")
 
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(160, 200, 351, 281))
@@ -29,35 +34,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
 
-        self.matrices = self.create_button("Funciones entre Matrices", self.matriz)
+        self.matrices = self.create_button("Suma de Matrices", self.matrizsuma)
         self.verticalLayout.addWidget(self.matrices)
 
-        self.inversa = self.create_button("Matriz Inversa", self.matriz_inversa)
+        self.inversa = self.create_button("Resta de Matrices", self.matrizresta)
         self.verticalLayout.addWidget(self.inversa)
 
-        self.determinante = self.create_button("Determinante de una Matriz", self.determinantes)
+        self.determinante = self.create_button("Multiplicación de matrices.", self.multiplicacionmat)
         self.verticalLayout.addWidget(self.determinante)
 
-        self.rango = self.create_button("Rango de una matriz", self.rangos)
+        self.rango = self.create_button("Producto punto matrices.", self.rangos)
         self.verticalLayout.addWidget(self.rango)
 
-        self.cifrado = self.create_button("Cifrado por matrices", self.cifrados)
-        self.verticalLayout.addWidget(self.cifrado)
-
-        self.cadena = self.create_button("Cadenas de Markov", self.cadenasM)
-        self.verticalLayout.addWidget(self.cadena)
-
-        self.vectores = self.create_button("Operaciones con vectores", self.vectoresO)
-        self.verticalLayout.addWidget(self.vectores)
 
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(60, 50, 91, 81))
         self.label_2.setPixmap(QtGui.QPixmap("logo.png"))
         self.label_2.setScaledContents(True)
 
+    def closeEvent(self, event):
+        self.window_closed.emit()
+        super().closeEvent(event)
+
     def create_button(self, text, callback):
         button = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        button.setStyleSheet("height: 30px; background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
+        button.setStyleSheet(
+            "height: 30px; background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         button.setText(text)
         button.clicked.connect(callback)
         return button
@@ -65,37 +67,33 @@ class MainWindow(QtWidgets.QMainWindow):
     def reopen_mainwindow(self):
         self.show()
 
-    def matriz(self):
+    def matrizsuma(self):
         self.hide()
-        self.matricesO = MainWindowMatriz()
-        self.matricesO.show()
-        self.matricesO.window_closed.connect(self.reopen_mainwindow)
+        self.matrizR = MainWindowSuma()
+        self.matrizR.show()
+        self.matrizR.window_closed.connect(self.reopen_mainwindow)
 
-    def matriz_inversa(self):
-        print('Matriz inversa')
+    def matrizresta(self):
+        self.hide()
+        self.matrizR = MainWindowResta()
+        self.matrizR.show()
+        self.matrizR.window_closed.connect(self.reopen_mainwindow)
 
-    def determinantes(self):
-        print('Determinante.')
+    def multiplicacionmat(self):
+        self.hide()
+        self.cadenasMarkov = MainWindowMulti()
+        self.cadenasMarkov.show()
+        self.cadenasMarkov.window_closed.connect(self.reopen_mainwindow)
 
     def rangos(self):
         print('Rango de una matriz')
 
-    def cifrados(self):
-        print('cifrado')
-
-    def cadenasM(self):
-        self.hide()
-        self.cadenasMarkov = MarkovInterface()
-        self.cadenasMarkov.show()
-        self.cadenasMarkov.window_closed.connect(self.reopen_mainwindow)
-
-    def vectoresO(self):
-        print('Operaciones entre vectores.')
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
-    mainWindow = MainWindow()
+    mainWindow = MainWindowMatriz()
     mainWindow.show()
     sys.exit(app.exec())

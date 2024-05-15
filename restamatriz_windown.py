@@ -1,7 +1,9 @@
 import sys
+
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, \
     QMessageBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 
 
 class MatrixInputWidget(QWidget):
@@ -55,7 +57,9 @@ class MatrixInputWidget(QWidget):
         return matrix_data
 
 
-class MainWindow(QWidget):
+class MainWindowResta(QWidget):
+    window_closed = pyqtSignal()
+
     def __init__(self):
         super().__init__()
 
@@ -66,9 +70,15 @@ class MainWindow(QWidget):
 
         self.create_widgets()
         self.layout_widgets()
+        icon = QIcon("logo.png")
+        self.setWindowIcon(icon)
 
         self.matriz_a = None
         self.matriz_b = None
+
+    def closeEvent(self, event):
+        self.window_closed.emit()
+        super().closeEvent(event)
 
     def create_widgets(self):
         self.label_titulo = QLabel("<h2>Resta de Matrices</h2>")
@@ -81,14 +91,14 @@ class MainWindow(QWidget):
         self.input_columnas = QLineEdit()
 
         self.button_ingresar_a = QPushButton("Ingresar Matriz A")
-        self.button_ingresar_a.setStyleSheet("background-color: #2196F3; color: white;")
+        self.button_ingresar_a.setStyleSheet("background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
 
         self.button_ingresar_b = QPushButton("Ingresar Matriz B")
-        self.button_ingresar_b.setStyleSheet("background-color: #2196F3; color: white;")
+        self.button_ingresar_b.setStyleSheet("background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         self.button_ingresar_b.setEnabled(False)
 
         self.button_calcular = QPushButton("Calcular Resta")
-        self.button_calcular.setStyleSheet("background-color: #2196F3; color: white;")
+        self.button_calcular.setStyleSheet("background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         self.button_calcular.setEnabled(False)
 
         self.textedit_resultado = QTextEdit()
@@ -218,7 +228,7 @@ class MainWindow(QWidget):
 
 def main():
     app = QApplication(sys.argv)
-    window = MainWindow()
+    window = MainWindowResta()
     window.show()
     sys.exit(app.exec())
 
