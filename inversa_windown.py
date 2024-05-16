@@ -1,7 +1,9 @@
 import sys
 import numpy as np
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, QMessageBox
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, \
+    QMessageBox
 
 
 class MatrixInputWidget(QWidget):
@@ -11,6 +13,8 @@ class MatrixInputWidget(QWidget):
         self.size = size
         self.create_widgets()
         self.layout_widgets()
+        icon = QIcon("logo.png")
+        self.setWindowIcon(icon)
 
     def create_widgets(self):
         self.labels = []
@@ -19,7 +23,7 @@ class MatrixInputWidget(QWidget):
             row_labels = []
             row_inputs = []
             for j in range(self.size):
-                label = QLabel(f"A[{i+1},{j+1}]:")
+                label = QLabel(f"A[{i + 1},{j + 1}]:")
                 input_box = QLineEdit()
                 row_labels.append(label)
                 row_inputs.append(input_box)
@@ -71,12 +75,16 @@ class ProcessWindow(QWidget):
         self.setLayout(layout)
 
 
-class MainWindow(QWidget):
+class MainWindowInversa(QWidget):
+    window_closed = pyqtSignal()
+
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Inversa de Matriz Cuadrada")
         self.setGeometry(100, 100, 800, 600)
+        icon = QIcon("logo.png")
+        self.setWindowIcon(icon)
 
         self.layout_principal = QVBoxLayout()
 
@@ -84,6 +92,10 @@ class MainWindow(QWidget):
         self.layout_widgets()
 
         self.matrix_input_widget = None
+
+    def closeEvent(self, event):
+        self.window_closed.emit()
+        super().closeEvent(event)
 
     def create_widgets(self):
         self.label_titulo = QLabel("<h2>Inversa de Matriz Cuadrada</h2>")
@@ -169,11 +181,10 @@ class MainWindow(QWidget):
 
 def main():
     app = QApplication(sys.argv)
-    window = MainWindow()
+    window = MainWindowInversa()
     window.show()
     sys.exit(app.exec())
 
 
 if __name__ == "__main__":
     main()
-

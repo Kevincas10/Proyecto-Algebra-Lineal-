@@ -1,6 +1,8 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from markov_windown import MarkovInterface
 from sub_main_matriz import MainWindowMatriz
+from inversa_windown import MainWindowInversa
+from cifrado_window import CifradoApp
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -21,7 +23,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(150, 20, 391, 141))
-        self.label.setText("<html><head/><body><p align=\"center\"><span style=\" font-size:20pt; font-weight:700;\">Programa Algebra Lineal. </span></p></body></html>")
+        self.label.setText(
+            "<html><head/><body><p align=\"center\"><span style=\" font-size:20pt; font-weight:700;\">Programa Algebra Lineal. </span></p></body></html>")
 
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(160, 200, 351, 281))
@@ -57,7 +60,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def create_button(self, text, callback):
         button = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        button.setStyleSheet("height: 30px; background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
+        button.setStyleSheet(
+            "height: 30px; background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         button.setText(text)
         button.clicked.connect(callback)
         return button
@@ -72,7 +76,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.matricesO.window_closed.connect(self.reopen_mainwindow)
 
     def matriz_inversa(self):
-        print('Matriz inversa')
+        self.hide()
+        self.inversas = MainWindowInversa()
+        self.inversas.show()
+        self.inversas.window_closed.connect(self.reopen_mainwindow)
 
     def determinantes(self):
         print('Determinante.')
@@ -81,7 +88,10 @@ class MainWindow(QtWidgets.QMainWindow):
         print('Rango de una matriz')
 
     def cifrados(self):
-        print('cifrado')
+        self.hide()
+        self.cifradoss = CifradoApp()
+        self.cifradoss.show()
+        self.cifradoss.window_closed.connect(self.reopen_mainwindow)
 
     def cadenasM(self):
         self.hide()
@@ -95,6 +105,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()

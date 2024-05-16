@@ -7,7 +7,7 @@ from PyQt6.QtGui import QPixmap, QIcon
 from PyQt6.QtCore import Qt, pyqtSignal
 
 import numpy as np
-from PyQt6.uic.properties import QtGui
+
 
 
 class MarkovInterface(QWidget):
