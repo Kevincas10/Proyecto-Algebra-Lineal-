@@ -225,35 +225,30 @@ class MainWindowMulti(QWidget):
             return
 
         resultado = []
+        procedimiento = "Procedimiento de la Multiplicación:\n"
         for i in range(len(matriz_a_data)):
             fila_resultado = []
             for j in range(len(matriz_b_data[0])):
                 suma = 0
+                procedimiento += f"Elemento C({i + 1}, {j + 1}) = "
+                elementos_suma = []
                 for k in range(len(matriz_a_data[0])):
-                    suma += matriz_a_data[i][k] * matriz_b_data[k][j]
+                    multiplicacion = matriz_a_data[i][k] * matriz_b_data[k][j]
+                    suma += multiplicacion
+                    elementos_suma.append(f"A({i + 1}, {k + 1}) * B({k + 1}, {j + 1}) = {matriz_a_data[i][k]} * {matriz_b_data[k][j]} = {multiplicacion}")
                 fila_resultado.append(suma)
+                procedimiento += " + ".join(elementos_suma) + f" = {suma}\n"
             resultado.append(fila_resultado)
 
-        resultado_texto = "Resultado de la Multiplicación:\n"
-        resultado_texto += f"{self.format_matrix(resultado)}\n"
+        resultado_str = "\nResultado de la Multiplicación:\n"
+        for fila in resultado:
+            resultado_str += "\t".join(map(str, fila)) + "\n"
 
-        self.textedit_resultado.setText(resultado_texto)
-
-    def format_matrix(self, matrix):
-        if not matrix:
-            return ""
-        rows = len(matrix)
-        cols = len(matrix[0])
-        formatted = ""
-        for i in range(rows):
-            for j in range(cols):
-                formatted += f"{matrix[i][j]}\t"
-            formatted += "\n"
-        return formatted
+        self.textedit_resultado.setText(procedimiento + resultado_str)
 
     def closeEvent(self, event):
         self.window_closed.emit()
-        super().closeEvent(event)
+        event.accept()
 
 
 def main():
@@ -263,5 +258,5 @@ def main():
     sys.exit(app.exec())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
