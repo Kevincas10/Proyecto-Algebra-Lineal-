@@ -1,8 +1,6 @@
 import sys
-
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, \
-    QMessageBox
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, QMessageBox
 from PyQt6.QtCore import Qt, pyqtSignal
 
 
@@ -59,13 +57,14 @@ class MatrixInputWidget(QWidget):
 
 class MainWindowSuma(QWidget):
     window_closed = pyqtSignal()
+
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Suma de Matrices")
         self.setGeometry(100, 100, 800, 600)
 
-        self.layout_principal = QVBoxLayout()  # Agregar esta línea para inicializar el layout_principal
+        self.layout_principal = QVBoxLayout()
 
         self.create_widgets()
         self.layout_widgets()
@@ -96,7 +95,7 @@ class MainWindowSuma(QWidget):
         self.button_ingresar_b.setStyleSheet("background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         self.button_ingresar_b.setEnabled(False)
 
-        self.button_calcular = QPushButton("Calcular Suma")  # Updated button text
+        self.button_calcular = QPushButton("Calcular Suma")
         self.button_calcular.setStyleSheet("background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         self.button_calcular.setEnabled(False)
 
@@ -124,14 +123,14 @@ class MainWindowSuma(QWidget):
 
         self.button_ingresar_a.clicked.connect(self.ingresar_matriz_a)
         self.button_ingresar_b.clicked.connect(self.ingresar_matriz_b)
-        self.button_calcular.clicked.connect(self.calcular_suma)  # Connect to calcular_suma method
+        self.button_calcular.clicked.connect(self.calcular_suma)
 
         layout_principal.addWidget(self.button_ingresar_a)
         layout_principal.addWidget(self.button_ingresar_b)
         layout_principal.addWidget(self.button_calcular)
         layout_principal.addWidget(self.textedit_resultado)
 
-        self.layout_principal = layout_principal  # Asignar el layout_principal al atributo de la clase
+        self.layout_principal = layout_principal
 
         self.setLayout(layout_principal)
 
@@ -155,8 +154,7 @@ class MainWindowSuma(QWidget):
             return
 
         self.matrix_input_widget_a = MatrixInputWidget(filas, columnas)
-        self.layout_principal.insertWidget(4,
-                                           self.matrix_input_widget_a)  # Insertar la matriz después de los campos de entrada
+        self.layout_principal.insertWidget(4, self.matrix_input_widget_a)
 
         self.button_ingresar_a.setEnabled(False)
         self.button_ingresar_b.setEnabled(True)
@@ -181,8 +179,6 @@ class MainWindowSuma(QWidget):
             return
 
         self.matrix_input_widget_b = MatrixInputWidget(filas, columnas)
-
-        # Insertar la matriz debajo del botón "Ingresar Matriz B"
         index_boton_ingresar_b = self.layout_principal.indexOf(self.button_ingresar_b)
         self.layout_principal.insertWidget(index_boton_ingresar_b + 1, self.matrix_input_widget_b)
 
@@ -201,17 +197,24 @@ class MainWindowSuma(QWidget):
             return
 
         resultado = []
+        procedimiento = []
         for i in range(len(matriz_a_data)):
             fila_resultado = []
+            fila_procedimiento = []
             for j in range(len(matriz_a_data[i])):
                 suma = matriz_a_data[i][j] + matriz_b_data[i][j]
                 fila_resultado.append(suma)
+                fila_procedimiento.append(f"{matriz_a_data[i][j]} + {matriz_b_data[i][j]} = {suma}")
             resultado.append(fila_resultado)
+            procedimiento.append(fila_procedimiento)
 
         resultado_texto = "Procedimiento de la Suma:\n"
-        resultado_texto += f"Matriz A:\n{self.format_matrix(matriz_a_data)}\n\n"
-        resultado_texto += f"Matriz B:\n{self.format_matrix(matriz_b_data)}\n\n"
-        resultado_texto += "Resultado de la Suma:\n"
+        for i in range(len(procedimiento)):
+            for j in range(len(procedimiento[i])):
+                resultado_texto += f"{procedimiento[i][j]}\t"
+            resultado_texto += "\n"
+
+        resultado_texto += "\nResultado de la Suma:\n"
         resultado_texto += f"{self.format_matrix(resultado)}\n"
 
         self.textedit_resultado.setText(resultado_texto)

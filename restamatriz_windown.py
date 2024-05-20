@@ -1,8 +1,6 @@
 import sys
-
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, \
-    QMessageBox
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, QMessageBox
 from PyQt6.QtCore import Qt, pyqtSignal
 
 
@@ -133,6 +131,7 @@ class MainWindowResta(QWidget):
         layout_principal.addWidget(self.textedit_resultado)
 
         self.layout_principal = layout_principal
+
         self.setLayout(layout_principal)
 
     def ingresar_matriz_a(self):
@@ -198,17 +197,24 @@ class MainWindowResta(QWidget):
             return
 
         resultado = []
+        procedimiento = []
         for i in range(len(matriz_a_data)):
             fila_resultado = []
+            fila_procedimiento = []
             for j in range(len(matriz_a_data[i])):
-                resta = matriz_a_data[i][j] - matriz_b_data[i][j]  # Resta en lugar de suma
+                resta = matriz_a_data[i][j] - matriz_b_data[i][j]
                 fila_resultado.append(resta)
+                fila_procedimiento.append(f"{matriz_a_data[i][j]} - {matriz_b_data[i][j]} = {resta}")
             resultado.append(fila_resultado)
+            procedimiento.append(fila_procedimiento)
 
         resultado_texto = "Procedimiento de la Resta:\n"
-        resultado_texto += f"Matriz A:\n{self.format_matrix(matriz_a_data)}\n\n"
-        resultado_texto += f"Matriz B:\n{self.format_matrix(matriz_b_data)}\n\n"
-        resultado_texto += "Resultado de la Resta:\n"
+        for i in range(len(procedimiento)):
+            for j in range(len(procedimiento[i])):
+                resultado_texto += f"{procedimiento[i][j]}\t"
+            resultado_texto += "\n"
+
+        resultado_texto += "\nResultado de la Resta:\n"
         resultado_texto += f"{self.format_matrix(resultado)}\n"
 
         self.textedit_resultado.setText(resultado_texto)
