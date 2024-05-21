@@ -13,7 +13,9 @@ mapping = {
     'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8,
     'i': 9, 'j': 10, 'k': 11, 'l': 12, 'm': 13, 'n': 14, 'ñ': 15,
     'o': 16, 'p': 17, 'q': 18, 'r': 19, 's': 20, 't': 21, 'u': 22,
-    'v': 23, 'w': 24, 'x': 25, 'y': 26, 'z': 27, ' ': 28
+    'v': 23, 'w': 24, 'x': 25, 'y': 26, 'z': 27, ' ': 28, '0': 29,
+    '1': 30, '2': 31, '3': 32, '4': 33,  '5': 34, '6': 35, '7': 36,
+    '8': 37, '9': 38
 }
 
 
@@ -121,15 +123,33 @@ class CifradoApp(QWidget):
             columna = il // 3
             matriz[fila, columna] = valor
 
+        # Mostrar el proceso de cifrado
+        procedimiento = f'Texto convertido a números:\n{lis}\n\n'
+        procedimiento += f'Matriz de texto antes del cifrado:\n{matriz}\n\n'
+        procedimiento += f'Matriz de llave:\n{llave_np}\n\n'
+
         matrizc = np.dot(llave_np, matriz)
-        matrizc_text = f'Matriz Cifrada:\n{matrizc}\n'
+        procedimiento += f'Matriz cifrada:\n{matrizc}\n\n'
+
         matriz_inversa_np = matriz_inversa(llave_np)
         if matriz_inversa_np is None:
-            self.result_output.setText(matrizc_text + "La matriz no es invertible.")
+            procedimiento += "La matriz de llave no es invertible.\n"
+            self.result_output.setText(procedimiento)
         else:
             matriz_original = np.dot(matriz_inversa_np, matrizc)
-            matriz_original_text = f'Matriz Sin Cifrar:\n{matriz_original}\n'
-            self.result_output.setText(matrizc_text + matriz_original_text)
+            procedimiento += f'Matriz inversa de la llave:\n{matriz_inversa_np}\n\n'
+            procedimiento += f'Matriz descifrada (texto original):\n{matriz_original}\n\n'
+
+            # Convertir la matriz descifrada de vuelta a texto
+            texto_descifrado = []
+            for i in range(matriz_original.shape[1]):
+                for j in range(3):
+                    valor = round(matriz_original[j, i])
+                    letra = next((k for k, v in mapping.items() if v == valor), '?')
+                    texto_descifrado.append(letra)
+            procedimiento += f'Texto descifrado:\n{"".join(texto_descifrado).strip()}\n'
+
+            self.result_output.setText(procedimiento)
 
     def center_window(self):
         screen_geometry = QApplication.primaryScreen().geometry()
