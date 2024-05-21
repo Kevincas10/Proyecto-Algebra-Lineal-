@@ -4,6 +4,7 @@ from sub_main_matriz import MainWindowMatriz
 from inversa_windown import MainWindowInversa
 from cifrado_window import CifradoApp
 from determinante_windown import DeterminantCalculator
+from sub_main_vectore import MainWindowVectores
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -104,8 +105,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cadenasMarkov.window_closed.connect(self.reopen_mainwindow)
 
     def vectoresO(self):
-        print('Operaciones entre vectores.')
-
+        self.hide()
+        self.vectoress = MainWindowVectores()
+        self.vectoress.show()
+        self.vectoress.window_closed.connect(self.reopen_mainwindow)
 
 if __name__ == "__main__":
     import sys

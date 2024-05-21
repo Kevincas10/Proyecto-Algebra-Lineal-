@@ -1,13 +1,23 @@
 import sys
+import numpy as np
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QGridLayout, QTextEdit, QMessageBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 
 class DeterminantCalculator(QWidget):
+    window_closed = pyqtSignal()
+
     def __init__(self):
         super().__init__()
 
+        self.initUI()
+
+    def initUI(self):
         self.setWindowTitle("Calculadora de Determinante")
         self.setGeometry(100, 100, 700, 500)
+
+        icon = QIcon("logo.png")
+        self.setWindowIcon(icon)
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -25,6 +35,7 @@ class DeterminantCalculator(QWidget):
         self.layout.addLayout(self.size_layout)
 
         self.generate_matrix_button = QPushButton("Generar Matriz")
+        self.generate_matrix_button.setStyleSheet("height: 30px; background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         self.generate_matrix_button.clicked.connect(self.generate_matrix)
         self.layout.addWidget(self.generate_matrix_button)
 
@@ -35,12 +46,19 @@ class DeterminantCalculator(QWidget):
         self.layout.addLayout(self.matrix_layout)
 
         self.calculate_button = QPushButton("Calcular Determinante")
+        self.calculate_button.setStyleSheet("height: 30px; background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         self.calculate_button.clicked.connect(self.calculate_determinant)
         self.layout.addWidget(self.calculate_button)
 
         self.result_text_edit = QTextEdit()
         self.result_text_edit.setReadOnly(True)
         self.layout.addWidget(self.result_text_edit)
+
+        self.center_window()
+
+    def closeEvent(self, event):
+        self.window_closed.emit()
+        super().closeEvent(event)
 
     def generate_matrix(self):
         size_str = self.size_input.text()
@@ -101,7 +119,7 @@ class DeterminantCalculator(QWidget):
             determinant = 0
             procedure = ""
             for col in range(size):
-                sub_matrix = [row[:col] + row[col+1:] for row in matrix[1:]]
+                sub_matrix = [row[:col] + row[col + 1:] for row in matrix[1:]]
                 sign = (-1) ** col
                 sub_determinant, sub_procedure = self.calculate_matrix_determinant(sub_matrix)
                 determinant += sign * matrix[0][col] * sub_determinant
@@ -112,9 +130,14 @@ class DeterminantCalculator(QWidget):
             procedure = f"Determinante de matriz {size}x{size}: {procedure}"
             return determinant, procedure
 
+    def center_window(self):
+        screen_geometry = QApplication.primaryScreen().geometry()
+        window_geometry = self.frameGeometry()
+        window_geometry.moveCenter(screen_geometry.center())
+        self.move(window_geometry.topLeft())
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     calculator = DeterminantCalculator()
     calculator.show()
     sys.exit(app.exec())
-
