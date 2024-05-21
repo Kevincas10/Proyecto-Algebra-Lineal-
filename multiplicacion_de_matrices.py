@@ -87,15 +87,15 @@ class MainWindowMulti(QWidget):
         self.input_columnas_b = QLineEdit()
 
         self.button_ingresar_a = QPushButton("Ingresar Matriz A")
-        self.button_ingresar_a.setStyleSheet("background-color: #008080; color: white; border-radius: 3px")
+        self.button_ingresar_a.setStyleSheet("height: 30px; background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         self.button_ingresar_a.clicked.connect(self.mostrar_matriz_a)
 
         self.button_ingresar_b = QPushButton("Ingresar Matriz B")
-        self.button_ingresar_b.setStyleSheet("background-color: #008080; color: white; border-radius: 3px")
+        self.button_ingresar_b.setStyleSheet("height: 30px; background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         self.button_ingresar_b.clicked.connect(self.mostrar_matriz_b)
 
         self.button_calcular = QPushButton("Calcular Multiplicación")
-        self.button_calcular.setStyleSheet("background-color: #008080; color: white; border-radius: 3px")
+        self.button_calcular.setStyleSheet("height: 30px; background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         self.button_calcular.setEnabled(False)
         self.button_calcular.clicked.connect(self.calcular_multiplicacion)
 

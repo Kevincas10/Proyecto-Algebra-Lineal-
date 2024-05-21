@@ -104,11 +104,11 @@ class MainWindowInversa(QWidget):
         self.input_size = QLineEdit()
 
         self.button_ingresar_matriz = QPushButton("Ingresar Matriz")
-        self.button_ingresar_matriz.setStyleSheet("background-color: #2196F3; color: white;")
+        self.button_ingresar_matriz.setStyleSheet("height: 30px; background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         self.button_ingresar_matriz.clicked.connect(self.ingresar_matriz)
 
         self.button_confirmar = QPushButton("Confirmar")
-        self.button_confirmar.setStyleSheet("background-color: #4CAF50; color: white;")
+        self.button_confirmar.setStyleSheet("height: 30px; background-color: green; color: white; border: 2px solid black; border-radius: 13px;")
         self.button_confirmar.clicked.connect(self.mostrar_proceso)
 
         self.textedit_resultado = QTextEdit()

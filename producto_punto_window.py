@@ -1,7 +1,7 @@
 import sys
 
 from PyQt6.QtGui import QIcon, QPixmap
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit, QSpacerItem, QSizePolicy
 from PyQt6.QtCore import Qt, pyqtSignal
 
 
@@ -31,18 +31,19 @@ class ProductoPuntoApp(QWidget):
         pixmap = QPixmap("logo.png")
         pixmap_resized = pixmap.scaledToWidth(70)
         logo_label.setPixmap(pixmap_resized)
+
         # Título centrado y en negrita
-        x = QLabel("")
         self.label_titulo = QLabel("<h1><b>Método de Markov</b></h1>")
         self.label_titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Layout para el título y el logo
         layout_titulo_logo = QHBoxLayout()
+        layout_titulo_logo.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
         layout_titulo_logo.addWidget(logo_label)
-        layout_titulo_logo.addWidget(x)
         layout_titulo_logo.addWidget(self.label_titulo)
-        layout_titulo_logo.addWidget(x)
-        layout_titulo_logo.addWidget(x)
+        layout_titulo_logo.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+
+        layout.addLayout(layout_titulo_logo)
 
         self.vector1_label = QLabel('Ingrese el primer vector:')
         layout.addWidget(self.vector1_label)
@@ -64,6 +65,7 @@ class ProductoPuntoApp(QWidget):
 
         self.calculate_button = QPushButton('Calcular Producto Punto')
         self.calculate_button.clicked.connect(self.calcular_producto_punto)
+        self.calculate_button.setStyleSheet("height: 30px; background-color: #008080; color: white; border: 2px solid black; border-radius: 13px;")
         layout.addWidget(self.calculate_button)
 
         self.result_output = QTextEdit()

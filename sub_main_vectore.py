@@ -2,7 +2,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import pyqtSignal
 
 from producto_punto_window import ProductoPuntoApp
-
+from sumavectores_windown import VectorAdditionApp
 
 
 class MainWindowVectores(QtWidgets.QMainWindow):
@@ -34,7 +34,7 @@ class MainWindowVectores(QtWidgets.QMainWindow):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
 
-        self.matrices = self.create_button("Suma de vectores.", self.vectoressuma)
+        self.matrices = self.create_button("Suma de vectores.", self.sumadevectores)
         self.verticalLayout.addWidget(self.matrices)
 
         self.inversa = self.create_button("Producto de vectores.", self.multiplicacion)
@@ -60,14 +60,17 @@ class MainWindowVectores(QtWidgets.QMainWindow):
     def reopen_mainwindow(self):
         self.show()
 
-    def vectoressuma(self):
+    def sumadevectores(self):
         self.hide()
-        self.matrizR = ProductoPuntoApp()
+        self.matrizR = VectorAdditionApp()
         self.matrizR.show()
         self.matrizR.window_closed.connect(self.reopen_mainwindow)
 
     def multiplicacion(self):
-        print('Multiplicacion de vectores ')
+        self.hide()
+        self.matrizR = ProductoPuntoApp()
+        self.matrizR.show()
+        self.matrizR.window_closed.connect(self.reopen_mainwindow)
 
 
 if __name__ == "__main__":
