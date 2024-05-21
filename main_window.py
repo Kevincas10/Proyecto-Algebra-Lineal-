@@ -3,6 +3,7 @@ from markov_windown import MarkovInterface
 from sub_main_matriz import MainWindowMatriz
 from inversa_windown import MainWindowInversa
 from cifrado_window import CifradoApp
+from determinante_windown import DeterminantCalculator
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -82,7 +83,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.inversas.window_closed.connect(self.reopen_mainwindow)
 
     def determinantes(self):
-        print('Determinante.')
+        self.hide()
+        self.inversas = DeterminantCalculator()
+        self.inversas.show()
+        self.inversas.window_closed.connect(self.reopen_mainwindow)
 
     def rangos(self):
         print('Rango de una matriz')
