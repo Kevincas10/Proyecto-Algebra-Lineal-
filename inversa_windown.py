@@ -91,6 +91,11 @@ class MainWindowInversa(QWidget):
 
         self.matrix_input_widget = None
 
+    def closeEvent(self, event):
+        self.window_closed.emit()
+        super().closeEvent(event)
+
+
     def create_widgets(self):
         self.label_titulo = QLabel("<h2>Inversa de Matriz Cuadrada</h2>")
         self.label_titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
