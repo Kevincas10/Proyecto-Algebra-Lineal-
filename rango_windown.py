@@ -1,7 +1,9 @@
 import sys
 import numpy as np
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, QMessageBox
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, \
+    QMessageBox
+
 
 class MatrixInputWidget(QWidget):
     def __init__(self, rows, cols):
@@ -50,6 +52,7 @@ class MatrixInputWidget(QWidget):
             matrix_data.append(row_data)
         return matrix_data
 
+
 class ProcessWindow(QWidget):
     def __init__(self, process_text):
         super().__init__()
@@ -62,6 +65,7 @@ class ProcessWindow(QWidget):
         layout.addWidget(self.textedit_process)
         self.setLayout(layout)
 
+
 class MainWindowRango(QWidget):
     window_closed = pyqtSignal()
 
@@ -73,6 +77,11 @@ class MainWindowRango(QWidget):
         self.create_widgets()
         self.layout_widgets()
         self.matrix_input_widget = None
+
+    def closeEvent(self, event):
+        self.window_closed.emit()
+        super().closeEvent(event)
+
 
     def create_widgets(self):
         self.label_titulo = QLabel("<h2>Rango de Matriz</h2>")
@@ -162,11 +171,13 @@ class MainWindowRango(QWidget):
         process_window = ProcessWindow(proceso_text)
         process_window.show()
 
+
 def main():
     app = QApplication(sys.argv)
     window = MainWindowRango()
     window.show()
     sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()

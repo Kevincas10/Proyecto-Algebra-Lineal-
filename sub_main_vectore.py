@@ -1,8 +1,8 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import pyqtSignal
 
-from restamatriz_windown import MainWindowResta
-from sumamatriz_windown import MainWindowSuma
+from producto_punto_window import ProductoPuntoApp
+
 
 
 class MainWindowVectores(QtWidgets.QMainWindow):
@@ -34,10 +34,10 @@ class MainWindowVectores(QtWidgets.QMainWindow):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
 
-        self.matrices = self.create_button("Suma de vectores.", self.matrizsuma)
+        self.matrices = self.create_button("Suma de vectores.", self.vectoressuma)
         self.verticalLayout.addWidget(self.matrices)
 
-        self.inversa = self.create_button("Producto de vectores.", self.matrizresta)
+        self.inversa = self.create_button("Producto de vectores.", self.multiplicacion)
         self.verticalLayout.addWidget(self.inversa)
 
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
@@ -60,17 +60,14 @@ class MainWindowVectores(QtWidgets.QMainWindow):
     def reopen_mainwindow(self):
         self.show()
 
-    def matrizsuma(self):
+    def vectoressuma(self):
         self.hide()
-        self.matrizR = MainWindowSuma()
+        self.matrizR = ProductoPuntoApp()
         self.matrizR.show()
         self.matrizR.window_closed.connect(self.reopen_mainwindow)
 
-    def matrizresta(self):
-        self.hide()
-        self.matrizR = MainWindowResta()
-        self.matrizR.show()
-        self.matrizR.window_closed.connect(self.reopen_mainwindow)
+    def multiplicacion(self):
+        print('Multiplicacion de vectores ')
 
 
 if __name__ == "__main__":

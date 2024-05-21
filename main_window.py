@@ -5,6 +5,7 @@ from inversa_windown import MainWindowInversa
 from cifrado_window import CifradoApp
 from determinante_windown import DeterminantCalculator
 from sub_main_vectore import MainWindowVectores
+from rango_windown import MainWindowRango
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -90,7 +91,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.inversas.window_closed.connect(self.reopen_mainwindow)
 
     def rangos(self):
-        print('Rango de una matriz')
+        self.hide()
+        self.range = MainWindowRango()
+        self.range.show()
+        self.range.window_closed.connect(self.reopen_mainwindow)
 
     def cifrados(self):
         self.hide()
@@ -109,6 +113,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.vectoress = MainWindowVectores()
         self.vectoress.show()
         self.vectoress.window_closed.connect(self.reopen_mainwindow)
+
 
 if __name__ == "__main__":
     import sys
