@@ -1,10 +1,10 @@
 import sys
 import numpy as np
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QIcon, QPixmap
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit, \
-    QMessageBox
-
+from PyQt6.QtWidgets import (
+    QApplication, QWidget, QLabel, QLineEdit, QPushButton,
+    QVBoxLayout, QHBoxLayout, QTextEdit, QMessageBox
+)
 
 class MatrixInputWidget(QWidget):
     def __init__(self, size):
@@ -13,8 +13,6 @@ class MatrixInputWidget(QWidget):
         self.size = size
         self.create_widgets()
         self.layout_widgets()
-        icon = QIcon("logo.png")
-        self.setWindowIcon(icon)
 
     def create_widgets(self):
         self.labels = []
@@ -59,7 +57,7 @@ class MatrixInputWidget(QWidget):
 
 
 class ProcessWindow(QWidget):
-    def __init__(self, process_text):
+    def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Proceso de Cálculo")
@@ -67,12 +65,14 @@ class ProcessWindow(QWidget):
 
         self.textedit_process = QTextEdit()
         self.textedit_process.setReadOnly(True)
-        self.textedit_process.setText(process_text)
 
         layout = QVBoxLayout()
         layout.addWidget(self.textedit_process)
 
         self.setLayout(layout)
+
+    def set_process_text(self, process_text):
+        self.textedit_process.setText(process_text)
 
 
 class MainWindowInversa(QWidget):
@@ -83,8 +83,6 @@ class MainWindowInversa(QWidget):
 
         self.setWindowTitle("Inversa de Matriz Cuadrada")
         self.setGeometry(100, 100, 800, 600)
-        icon = QIcon("logo.png")
-        self.setWindowIcon(icon)
 
         self.layout_principal = QVBoxLayout()
 
@@ -92,10 +90,6 @@ class MainWindowInversa(QWidget):
         self.layout_widgets()
 
         self.matrix_input_widget = None
-
-    def closeEvent(self, event):
-        self.window_closed.emit()
-        super().closeEvent(event)
 
     def create_widgets(self):
         self.label_titulo = QLabel("<h2>Inversa de Matriz Cuadrada</h2>")
@@ -170,21 +164,39 @@ class MainWindowInversa(QWidget):
             return
 
         process_text = "Proceso para Calcular la Inversa de la Matriz:\n"
-        process_text += f"Matriz Original:\n{matriz_np}\n\n"
-        process_text += f"Matriz Inversa:\n{inversa_np}\n"
+        process_text += "Matriz Original:\n" + self.format_matrix(matriz_np) + "\n\n"
 
-        process_window = ProcessWindow(process_text)
-        process_window.show()
+        augmented_matrix = np.hstack((matriz_np, np.eye(matriz_np.shape[0])))
+        process_text += "Matriz Aumentada:\n" + self.format_matrix(augmented_matrix) + "\n\n"
 
-        self.textedit_resultado.setText(f"Matriz Inversa:\n{inversa_np}")
+        # Aplicando eliminación Gaussiana
+        n = len(matriz_np)
+        for i in range(n):
+            # Escalar la fila para hacer que el elemento diagonal sea 1
+            diag_element = augmented_matrix[i, i]
+            augmented_matrix[i] = augmented_matrix[i] / diag_element
+            process_text += f"Escalando fila {i + 1} para hacer que el elemento diagonal sea 1:\n" + self.format_matrix(augmented_matrix) + "\n\n"
 
+            # Hacer que todos los demás elementos en la columna i sean 0
+            for j in range(n):
+                if i != j:
+                    factor = augmented_matrix[j, i]
+                    augmented_matrix[j] = augmented_matrix[j] - factor * augmented_matrix[i]
+                    process_text += f"Haciendo cero el elemento en la posición ({j + 1}, {i + 1}):\n" + self.format_matrix(augmented_matrix) + "\n\n"
+
+        inversa_np = augmented_matrix[:, n:]
+        process_text += "Matriz Inversa:\n" + self.format_matrix(inversa_np) + "\n"
+
+        self.textedit_resultado.setText(f"{process_text}\nResultado Final:\n{self.format_matrix(inversa_np)}")
+
+    def format_matrix(self, matrix):
+        return "\n".join(["\t".join(map("{:.4f}".format, row)) for row in matrix])
 
 def main():
     app = QApplication(sys.argv)
     window = MainWindowInversa()
     window.show()
     sys.exit(app.exec())
-
 
 if __name__ == "__main__":
     main()
