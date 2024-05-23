@@ -22,7 +22,7 @@ class ProductoPuntoApp(QWidget):
         self.setWindowIcon(icon)
 
     def initUI(self):
-        self.setWindowTitle('Producto Punto de Vectores')
+        self.setWindowTitle('Multiplicación de Vectores')
         self.setGeometry(100, 100, 400, 300)
 
         layout = QVBoxLayout()
@@ -33,7 +33,7 @@ class ProductoPuntoApp(QWidget):
         logo_label.setPixmap(pixmap_resized)
 
         # Título centrado y en negrita
-        self.label_titulo = QLabel("<h1><b>Método de Markov</b></h1>")
+        self.label_titulo = QLabel("<h1><b>Multiplicacion de vectores</b></h1>")
         self.label_titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Layout para el título y el logo
